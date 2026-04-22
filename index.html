@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>제비뽑기 🎲</title>
+<link href="https://fonts.googleapis.com/css2?family=Jua&family=Noto+Sans+KR:wght@400;600;700&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#0f1117;
+  --surface:#1a1d27;
+  --card:#22263a;
+  --border:#2e3450;
+  --accent:#6c63ff;
+  --accent2:#a78bfa;
+  --gold:#fbbf24;
+  --green:#34d399;
+  --red:#f87171;
+  --text:#e8eaf6;
+  --muted:#7b82a8;
+  --radius:16px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:'Noto Sans KR',sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  min-height:100vh;
+  display:flex;flex-direction:column;align-items:center;
+  padding:24px 16px 80px;
+  background-image:radial-gradient(ellipse at 20% 20%,rgba(108,99,255,.12) 0%,transparent 60%),
+                   radial-gradient(ellipse at 80% 80%,rgba(167,139,250,.08) 0%,transparent 60%);
+}
+
+/* ── 타이틀 ── */
+.title-wrap{text-align:center;margin-bottom:28px}
+.title-wrap h1{font-family:'Jua',sans-serif;font-size:2.2rem;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:-1px}
+.title-wrap p{color:var(--muted);font-size:.88rem;margin-top:4px}
+
+/* ── 모드 선택 ── */
+.mode-select{display:flex;gap:12px;margin-bottom:28px;flex-wrap:wrap;justify-content:center}
+.mode-btn{
+  font-family:'Jua',sans-serif;font-size:1rem;
+  padding:14px 28px;border-radius:50px;border:2px solid var(--border);
+  background:var(--surface);color:var(--muted);cursor:pointer;
+  transition:all .2s;display:flex;align-items:center;gap:8px;
+}
+.mode-btn:hover{border-color:var(--accent);color:var(--text)}
+.mode-btn.active{background:var(--accent);border-color:var(--accent);color:#fff;box-shadow:0 4px 20px rgba(108,99,255,.4)}
+
+/* ── 카드 ── */
+.card{
+  background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
+  padding:28px 24px;width:100%;max-width:520px;
+  box-shadow:0 8px 40px rgba(0,0,0,.3);
+}
+.card-title{font-family:'Jua',sans-serif;font-size:1.1rem;color:var(--accent2);margin-bottom:20px;display:flex;align-items:center;gap:8px}
+
+/* ── 폼 요소 ── */
+label{font-size:.82rem;font-weight:700;color:var(--muted);margin-bottom:6px;display:block;letter-spacing:.5px;text-transform:uppercase}
+input[type=text],textarea,input[type=password]{
+  width:100%;background:#12141e;border:1.5px solid var(--border);border-radius:10px;
+  padding:12px 15px;font-family:'Noto Sans KR',sans-serif;font-size:.95rem;
+  color:var(--text);outline:none;transition:border .2s;resize:vertical;
+}
+input:focus,textarea:focus{border-color:var(--accent);background:#14162a}
+input::placeholder,textarea::placeholder{color:var(--muted)}
+textarea{min-height:110px}
+.field{margin-bottom:16px}
+
+/* ── 버튼 ── */
+.btn{
+  font-family:'Jua',sans-serif;font-size:.95rem;
+  padding:11px 22px;border-radius:11px;border:none;cursor:pointer;
+  transition:all .18s;display:inline-flex;align-items:center;gap:6px;
+}
+.btn-primary{background:var(--accent);color:#fff;box-shadow:0 4px 16px rgba(108,99,255,.35)}
+.btn-primary:hover{filter:brightness(1.1);transform:translateY(-1px)}
+.btn-ghost{background:transparent;border:1.5px solid var(--border);color:var(--muted)}
+.btn-ghost:hover{border-color:var(--accent2);color:var(--text)}
+.btn-danger{background:transparent;border:1.5px solid var(--red);color:var(--red)}
+.btn-danger:hover{background:rgba(248,113,113,.1)}
+.btn-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}
+
+/* ── 항목 목록 ── */
+.item-list{display:flex;flex-direction:column;gap:6px;max-height:260px;overflow-y:auto;margin:12px 0;padding-right:4px}
+.item-list::-webkit-scrollbar{width:4px}
+.item-list::-webkit-scrollbar-track{background:transparent}
+.item-list::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+.item-row{
+  display:flex;align-items:center;gap:8px;
+  background:#12141e;border-radius:9px;padding:9px 12px;
+  border:1px solid var(--border);animation:fadeUp .2s ease;
+}
+@keyframes fadeUp{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:none}}
+.item-row .num{font-family:'Jua',sans-serif;color:var(--accent);font-size:.8rem;min-width:22px}
+.item-row .txt{flex:1;font-size:.9rem;color:var(--text)}
+.item-row .cnt{font-size:.75rem;color:var(--muted);background:var(--surface);padding:2px 7px;border-radius:20px}
+.del-btn{border:none;background:none;color:var(--muted);cursor:pointer;font-size:1rem;padding:2px 5px;border-radius:5px;transition:color .15s}
+.del-btn:hover{color:var(--red)}
+.empty{color:var(--muted);font-size:.87rem;text-align:center;padding:20px 0}
+
+/* ── 코드 배지 ── */
+.code-badge{
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  border-radius:12px;padding:16px 20px;text-align:center;margin:12px 0;
+}
+.code-badge .code-label{font-size:.78rem;color:rgba(255,255,255,.7);margin-bottom:6px}
+.code-badge .code-val{font-family:'Jua',sans-serif;font-size:2rem;letter-spacing:6px;color:#fff}
+
+/* ── 뽑기 화면 ── */
+.mission-header{
+  text-align:center;margin-bottom:20px;
+}
+.mission-header .mission-title{
+  font-family:'Jua',sans-serif;font-size:1.3rem;
+  background:linear-gradient(135deg,var(--gold),#fb923c);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+}
+.mission-header .stats{color:var(--muted);font-size:.82rem;margin-top:6px}
+
+/* 뽑기 구슬 */
+.ball-wrap{display:flex;justify-content:center;margin:20px 0}
+.ball{
+  width:140px;height:140px;border-radius:50%;
+  background:radial-gradient(circle at 35% 35%,rgba(255,255,255,.25),transparent 60%),
+             linear-gradient(135deg,var(--accent),var(--accent2));
+  display:flex;align-items:center;justify-content:center;
+  font-size:3.5rem;cursor:pointer;
+  box-shadow:0 8px 32px rgba(108,99,255,.5),inset 0 1px 0 rgba(255,255,255,.15);
+  transition:transform .15s,box-shadow .15s;
+  user-select:none;position:relative;overflow:hidden;
+}
+.ball::after{
+  content:'';position:absolute;top:12%;left:20%;
+  width:30%;height:18%;background:rgba(255,255,255,.3);
+  border-radius:50%;transform:rotate(-30deg);
+}
+.ball:hover{transform:scale(1.06);box-shadow:0 12px 48px rgba(108,99,255,.65)}
+.ball:active{transform:scale(.96)}
+.ball.spinning{animation:ballSpin .6s cubic-bezier(.4,0,.2,1)}
+@keyframes ballSpin{
+  0%{transform:scale(1) rotate(0)}
+  25%{transform:scale(1.12) rotate(-20deg)}
+  50%{transform:scale(1.15) rotate(15deg)}
+  75%{transform:scale(1.08) rotate(-8deg)}
+  100%{transform:scale(1) rotate(0)}
+}
+.ball.empty{opacity:.35;cursor:not-allowed}
+.ball-hint{text-align:center;color:var(--muted);font-size:.8rem;margin-top:-10px;margin-bottom:10px}
+
+/* 결과 */
+.result-card{
+  border-radius:14px;padding:24px 20px;text-align:center;
+  background:linear-gradient(135deg,rgba(108,99,255,.25),rgba(167,139,250,.15));
+  border:1px solid rgba(108,99,255,.4);
+  animation:popIn .4s cubic-bezier(.175,.885,.32,1.275);
+  margin-bottom:16px;
+}
+@keyframes popIn{
+  0%{opacity:0;transform:scale(.5) translateY(20px)}
+  100%{opacity:1;transform:scale(1) translateY(0)}
+}
+.result-card .rlabel{font-size:.78rem;color:var(--accent2);margin-bottom:8px;letter-spacing:.5px}
+.result-card .rtext{font-family:'Jua',sans-serif;font-size:1.55rem;color:#fff;line-height:1.4;word-break:break-all}
+.result-card .rsub{font-size:.78rem;color:var(--muted);margin-top:8px}
+
+/* 뽑기 이력 */
+.history{display:flex;flex-direction:column;gap:5px;max-height:200px;overflow-y:auto;padding-right:2px}
+.h-item{
+  display:flex;align-items:center;gap:8px;
+  background:#12141e;border-radius:8px;padding:8px 12px;
+  border:1px solid var(--border);
+  animation:fadeUp .2s ease;
+}
+.h-item .h-ord{font-family:'Jua',sans-serif;font-size:.75rem;color:var(--accent);min-width:28px}
+.h-item .h-who{font-size:.78rem;color:var(--muted);min-width:50px}
+.h-item .h-txt{font-size:.88rem;color:var(--text);flex:1}
+
+/* 진행 바 */
+.progress-wrap{margin:12px 0}
+.progress-label{display:flex;justify-content:space-between;font-size:.78rem;color:var(--muted);margin-bottom:5px}
+.progress-bar{height:5px;background:var(--border);border-radius:5px;overflow:hidden}
+.progress-fill{height:100%;border-radius:5px;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width .5s ease}
+
+/* 완료 */
+.done-banner{
+  text-align:center;padding:20px;
+  background:linear-gradient(135deg,rgba(251,191,36,.15),rgba(52,211,153,.1));
+  border:1px solid rgba(251,191,36,.3);border-radius:14px;
+  margin-bottom:16px;
+}
+.done-banner .done-emoji{font-size:2.5rem;margin-bottom:8px}
+.done-banner .done-text{font-family:'Jua',sans-serif;font-size:1.1rem;color:var(--gold)}
+
+/* toast */
+.toast{
+  position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);
+  background:var(--card);border:1px solid var(--border);border-radius:50px;
+  padding:10px 22px;font-size:.88rem;color:var(--text);
+  box-shadow:0 8px 30px rgba(0,0,0,.4);opacity:0;
+  transition:all .3s;z-index:999;white-space:nowrap;
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* 색종이 */
+.confetti-wrap{position:fixed;top:0;left:0;width:100vw;height:100vh;pointer-events:none;z-index:999;overflow:hidden}
+.cf{position:absolute;animation:fall linear forwards}
+@keyframes fall{
+  0%{opacity:1;transform:translateY(-20px) rotate(0)}
+  100%{opacity:0;transform:translateY(105vh) rotate(720deg)}
+}
+
+.divider{display:flex;align-items:center;gap:10px;margin:10px 0;color:var(--muted);font-size:.78rem}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border)}
+.hidden{display:none!important}
+.section-gap{height:14px}
+</style>
+</head>
+<body>
+
+<div class="title-wrap">
+  <h1>🎲 제비뽑기</h1>
+  <p>교사가 만든 미션을 학생이 직접 뽑아요</p>
+</div>
+
+<!-- 모드 선택 -->
+<div class="mode-select">
+  <button class="mode-btn active" onclick="setMode('teacher')" id="btn-teacher">👩‍🏫 교사 모드</button>
+  <button class="mode-btn" onclick="setMode('student')" id="btn-student">🎒 학생 모드</button>
+</div>
+
+<!-- ════════════════════ 교사 모드 ════════════════════ -->
+<div class="card" id="teacherPanel">
+  <div class="card-title">👩‍🏫 미션 설정</div>
+
+  <div class="field">
+    <label>미션 코드 (학생에게 알려줄 키워드)</label>
+    <input type="text" id="t-code" placeholder="예: 대응관계, math01, 수학활동1" />
+  </div>
+  <div class="field">
+    <label>미션 제목</label>
+    <input type="text" id="t-title" placeholder="예: 대응 관계를 실생활에서 찾아보기" />
+  </div>
+
+  <div class="divider">항목 입력</div>
+
+  <div class="field">
+    <label>여러 줄 한꺼번에 붙여넣기</label>
+    <textarea id="t-bulk" placeholder="자판기 버튼과 음료수&#10;신호등 색과 행동&#10;온도계 눈금과 온도&#10;학번과 학생 이름"></textarea>
+    <button class="btn btn-ghost" style="margin-top:8px;width:100%" onclick="bulkAdd()">+ 한꺼번에 추가</button>
+  </div>
+  <div class="divider">또는</div>
+  <div class="field" style="display:flex;gap:8px">
+    <input type="text" id="t-single" placeholder="항목 하나씩 추가" onkeydown="if(event.key==='Enter')addOne()" style="flex:1"/>
+    <button class="btn btn-primary" onclick="addOne()">+</button>
+  </div>
+
+  <div id="t-list" class="item-list"></div>
+  <div id="t-empty" class="empty">항목을 추가해보세요 🙂</div>
+
+  <div class="btn-row">
+    <button class="btn btn-danger" onclick="clearAll()">🗑 전체삭제</button>
+    <button class="btn btn-primary" onclick="saveMission()" style="flex:1">💾 미션 저장</button>
+  </div>
+
+  <div id="savedBadge" class="hidden">
+    <div class="section-gap"></div>
+    <div class="code-badge">
+      <div class="code-label">학생에게 이 코드를 알려주세요</div>
+      <div class="code-val" id="savedCodeVal">—</div>
+    </div>
+    <p style="color:var(--muted);font-size:.8rem;text-align:center;margin-top:8px">학생들은 '학생 모드'에서 이 코드를 입력하면 돼요 🎉</p>
+  </div>
+</div>
+
+<!-- ════════════════════ 학생 모드 ════════════════════ -->
+<div class="card hidden" id="studentPanel">
+
+  <!-- 코드 입력 화면 -->
+  <div id="s-entry">
+    <div class="card-title">🎒 미션 입력</div>
+    <div class="field">
+      <label>미션 코드</label>
+      <input type="text" id="s-code" placeholder="선생님이 알려준 코드 입력" onkeydown="if(event.key==='Enter')loadMission()"/>
+    </div>
+    <div class="field">
+      <label>내 이름 (뽑기 기록에 표시)</label>
+      <input type="text" id="s-name" placeholder="홍길동" onkeydown="if(event.key==='Enter')loadMission()"/>
+    </div>
+    <button class="btn btn-primary" style="width:100%;justify-content:center" onclick="loadMission()">🎲 입장하기</button>
+  </div>
+
+  <!-- 뽑기 화면 -->
+  <div id="s-draw" class="hidden">
+    <div class="mission-header">
+      <div class="mission-title" id="s-mission-title"></div>
+      <div class="stats" id="s-stats"></div>
+    </div>
+
+    <div class="progress-wrap">
+      <div class="progress-label"><span>전체 뽑힌 횟수</span><span id="s-prog-label">0 / 0</span></div>
+      <div class="progress-bar"><div class="progress-fill" id="s-prog-fill" style="width:0%"></div></div>
+    </div>
+
+    <div id="s-done-banner" class="done-banner hidden">
+      <div class="done-emoji">🎊</div>
+      <div class="done-text">모두 한 번씩 뽑혔어요!</div>
+    </div>
+
+    <div id="s-result"></div>
+
+    <div class="ball-wrap">
+      <div class="ball" id="ball" onclick="doDraw()">🎱</div>
+    </div>
+    <p class="ball-hint">구슬을 눌러서 뽑아요!</p>
+
+    <div id="s-history" class="history"></div>
+
+    <div class="btn-row" style="margin-top:12px">
+      <button class="btn btn-ghost" onclick="backToEntry()">← 뒤로</button>
+      <button class="btn btn-ghost" onclick="refreshState()">🔄 현황 새로고침</button>
+    </div>
+  </div>
+</div>
+
+<div class="confetti-wrap" id="cfWrap"></div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ═══════════════ STATE ═══════════════ */
+const STORE_KEY = 'zbp_missions_v1';
+let currentMode = 'teacher';
+let teacherItems = [];
+let studentPool = [];
+let studentDrawn = [];
+let currentMission = null;
+let currentName = '';
+
+/* ═══════════════ STORAGE (localStorage) ═══════════════ */
+function loadStore(){ try{ return JSON.parse(localStorage.getItem(STORE_KEY)||'{}'); }catch(e){return{};} }
+function saveStore(data){ localStorage.setItem(STORE_KEY, JSON.stringify(data)); }
+
+function getMission(code){
+  const s = loadStore();
+  return s[code.trim().toLowerCase()] || null;
+}
+function setMission(code, data){
+  const s = loadStore();
+  s[code.trim().toLowerCase()] = data;
+  saveStore(s);
+}
+function updateGlobalDrawn(code, item, who){
+  const s = loadStore();
+  const m = s[code.trim().toLowerCase()];
+  if(!m) return;
+  if(!m.globalDrawn) m.globalDrawn = [];
+  m.globalDrawn.push({item, who, ts: Date.now()});
+  saveStore(s);
+}
+
+/* ═══════════════ MODE SWITCH ═══════════════ */
+function setMode(m){
+  currentMode = m;
+  document.getElementById('btn-teacher').classList.toggle('active', m==='teacher');
+  document.getElementById('btn-student').classList.toggle('active', m==='student');
+  document.getElementById('teacherPanel').classList.toggle('hidden', m!=='teacher');
+  document.getElementById('studentPanel').classList.toggle('hidden', m!=='student');
+}
+
+/* ═══════════════ TEACHER ═══════════════ */
+function renderTeacherList(){
+  const el = document.getElementById('t-list');
+  const em = document.getElementById('t-empty');
+  el.innerHTML='';
+  em.classList.toggle('hidden', teacherItems.length>0);
+  teacherItems.forEach((it,i)=>{
+    const d=document.createElement('div'); d.className='item-row';
+    d.innerHTML=`<span class="num">${i+1}</span><span class="txt">${it}</span><button class="del-btn" onclick="removeTeacher(${i})">✕</button>`;
+    el.appendChild(d);
+  });
+}
+function addOne(){
+  const v=document.getElementById('t-single').value.trim();
+  if(!v) return;
+  teacherItems.push(v);
+  document.getElementById('t-single').value='';
+  renderTeacherList();
+}
+function bulkAdd(){
+  const lines=document.getElementById('t-bulk').value.split('\n').map(l=>l.trim()).filter(Boolean);
+  if(!lines.length) return;
+  teacherItems.push(...lines);
+  document.getElementById('t-bulk').value='';
+  renderTeacherList();
+}
+function removeTeacher(i){ teacherItems.splice(i,1); renderTeacherList(); }
+function clearAll(){
+  if(teacherItems.length && !confirm('전체 삭제할까요?')) return;
+  teacherItems=[]; renderTeacherList();
+}
+function saveMission(){
+  const code=document.getElementById('t-code').value.trim();
+  const title=document.getElementById('t-title').value.trim();
+  if(!code){ showToast('미션 코드를 입력해주세요!'); return; }
+  if(!title){ showToast('미션 제목을 입력해주세요!'); return; }
+  if(!teacherItems.length){ showToast('항목을 하나 이상 추가해주세요!'); return; }
+  setMission(code, { title, items:[...teacherItems], globalDrawn:[] });
+  document.getElementById('savedCodeVal').textContent = code.toUpperCase();
+  document.getElementById('savedBadge').classList.remove('hidden');
+  showToast('✅ 저장 완료!');
+}
+
+/* ═══════════════ STUDENT ═══════════════ */
+function loadMission(){
+  const code=document.getElementById('s-code').value.trim();
+  const name=document.getElementById('s-name').value.trim();
+  if(!code){ showToast('미션 코드를 입력해주세요!'); return; }
+  if(!name){ showToast('이름을 입력해주세요!'); return; }
+  const m = getMission(code);
+  if(!m){ showToast('❌ 코드를 찾을 수 없어요. 선생님께 다시 확인하세요!'); return; }
+  currentMission = { code: code.trim().toLowerCase(), ...m };
+  currentName = name;
+  studentDrawn = [];
+  buildPool();
+  document.getElementById('s-entry').classList.add('hidden');
+  document.getElementById('s-draw').classList.remove('hidden');
+  document.getElementById('s-mission-title').textContent = '📌 ' + m.title;
+  renderStudentDraw();
+}
+
+/* 골고루 뽑히도록: 전체 뽑힌 횟수 기준으로 가중치 부여 */
+function buildPool(){
+  if(!currentMission) return;
+  const m = getMission(currentMission.code);
+  const globalDrawn = m?.globalDrawn || [];
+  const items = m?.items || currentMission.items;
+
+  // 각 항목이 전체에서 몇 번 뽑혔는지 카운트
+  const cnt = {};
+  items.forEach(it => cnt[it] = 0);
+  globalDrawn.forEach(d => { if(cnt[d.item]!==undefined) cnt[d.item]++; });
+
+  // 아직 내가 안 뽑은 것들만 pool에 포함
+  const myDrawnSet = new Set(studentDrawn.map(d=>d.item));
+  const available = items.filter(it => !myDrawnSet.has(it));
+
+  if(!available.length){ studentPool = []; return; }
+
+  const minCnt = Math.min(...available.map(it=>cnt[it]));
+  // 가장 덜 뽑힌 것들 우선 (같으면 셔플)
+  const priority = available.filter(it=>cnt[it]===minCnt);
+  const rest     = available.filter(it=>cnt[it]>minCnt);
+  studentPool = [...shuffle(priority), ...shuffle(rest)];
+}
+
+function shuffle(arr){
+  const a=[...arr];
+  for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}
+  return a;
+}
+
+function doDraw(){
+  if(!studentPool.length) return;
+  const ball = document.getElementById('ball');
+  ball.classList.remove('spinning'); void ball.offsetWidth; ball.classList.add('spinning');
+  ball.textContent='🌀';
+  setTimeout(()=>{
+    buildPool(); // 최신 전역 현황 반영
+    if(!studentPool.length){ ball.textContent='😴'; ball.classList.add('empty'); renderStudentDraw(); return; }
+    const pick = studentPool.shift();
+    studentDrawn.push({item:pick, who:currentName, ts:Date.now()});
+    updateGlobalDrawn(currentMission.code, pick, currentName);
+    ball.textContent='✨'; ball.classList.remove('spinning');
+    renderStudentDraw();
+    launchConfetti();
+  }, 650);
+}
+
+function refreshState(){
+  buildPool();
+  renderStudentDraw();
+  showToast('🔄 현황을 새로고침했어요!');
+}
+
+function renderStudentDraw(){
+  if(!currentMission) return;
+  const m = getMission(currentMission.code);
+  const globalDrawn = m?.globalDrawn || [];
+  const items = m?.items || currentMission.items;
+  const total = items.length;
+  const uniqueDrawn = new Set(globalDrawn.map(d=>d.item)).size;
+  const pct = total ? Math.round(uniqueDrawn/total*100) : 0;
+
+  document.getElementById('s-stats').textContent = `전체 ${total}개 항목 · 지금까지 ${uniqueDrawn}개 뽑힘`;
+  document.getElementById('s-prog-label').textContent = `${uniqueDrawn} / ${total}`;
+  document.getElementById('s-prog-fill').style.width = pct+'%';
+
+  const allPickedOnce = uniqueDrawn >= total;
+  document.getElementById('s-done-banner').classList.toggle('hidden', !allPickedOnce);
+
+  const ball = document.getElementById('ball');
+  const myAllDone = studentPool.length===0 && studentDrawn.length>0;
+  if(myAllDone){ ball.textContent='😴'; ball.classList.add('empty'); }
+  else{ ball.classList.remove('empty'); }
+
+  // 최신 내 결과
+  const resultEl = document.getElementById('s-result');
+  if(studentDrawn.length){
+    const last = studentDrawn[studentDrawn.length-1];
+    const globalCnt = globalDrawn.filter(d=>d.item===last.item).length;
+    resultEl.innerHTML=`
+      <div class="result-card">
+        <div class="rlabel">🎉 뽑힌 항목</div>
+        <div class="rtext">${last.item}</div>
+        <div class="rsub">전체에서 ${globalCnt}번째로 뽑힌 항목이에요</div>
+      </div>`;
+  }
+
+  // 내 이력
+  const histEl = document.getElementById('s-history');
+  histEl.innerHTML='';
+  [...studentDrawn].reverse().forEach((d,i)=>{
+    const el=document.createElement('div'); el.className='h-item';
+    el.innerHTML=`<span class="h-ord">${studentDrawn.length-i}번째</span><span class="h-who">${d.who}</span><span class="h-txt">${d.item}</span>`;
+    histEl.appendChild(el);
+  });
+}
+
+function backToEntry(){
+  document.getElementById('s-entry').classList.remove('hidden');
+  document.getElementById('s-draw').classList.add('hidden');
+  currentMission=null; studentDrawn=[]; studentPool=[];
+}
+
+/* ═══════════════ UTILS ═══════════════ */
+const cfColors=['#6c63ff','#a78bfa','#fbbf24','#34d399','#f87171','#60a5fa','#fb7185'];
+function launchConfetti(){
+  const wrap=document.getElementById('cfWrap'); wrap.innerHTML='';
+  for(let i=0;i<55;i++){
+    const el=document.createElement('div'); el.className='cf';
+    el.style.cssText=`left:${Math.random()*100}vw;top:-12px;background:${cfColors[i%cfColors.length]};width:${6+Math.random()*8}px;height:${6+Math.random()*8}px;border-radius:${Math.random()>.5?'50%':'2px'};animation-duration:${1.1+Math.random()*1.2}s;animation-delay:${Math.random()*.35}s;`;
+    wrap.appendChild(el);
+  }
+  setTimeout(()=>wrap.innerHTML='',2600);
+}
+let toastTimer;
+function showToast(msg){
+  const t=document.getElementById('toast'); t.textContent=msg;
+  t.classList.add('show'); clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>t.classList.remove('show'),2400);
+}
+
+renderTeacherList();
+</script>
+</body>
+</html>
